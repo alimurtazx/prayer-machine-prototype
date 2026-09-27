@@ -6,43 +6,118 @@
     <title>The Corrupted Mannat</title>
     <style>
         body {
-            background-color: #0a0a0a;
+            background-color: #050505;
             color: #222;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            min-height: 100vh;
             overflow-x: hidden;
+            transition: background-color 2s ease;
         }
+
+        #landing-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+            transition: opacity 2s ease, transform 2s ease;
+        }
+
         #activation-btn {
-            background: #fff;
-            border: 2px solid #000;
-            padding: 12px 24px;
+            background: transparent;
+            color: #ff3333;
+            border: 1px solid #ff3333;
+            padding: 15px 30px;
             font-family: inherit;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 18px;
+            letter-spacing: 4px;
             cursor: pointer;
-            margin-bottom: 20px;
             text-transform: uppercase;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(255,51,51,0.2);
+            animation: pulse-glow 3s infinite alternate;
+            z-index: 10;
         }
+
         #activation-btn:hover {
-            background: #ddd;
+            background: rgba(255,51,51,0.1);
+            box-shadow: 0 0 25px rgba(255,51,51,0.5);
         }
-        /* Thermal Receipt Styling */
+
+        @keyframes pulse-glow {
+            0% { border-color: #ff3333; color: #ff3333; box-shadow: 0 0 10px rgba(255,51,51,0.2); }
+            100% { border-color: #8b0000; color: #8b0000; box-shadow: 0 0 2px rgba(139,0,0,0.1); }
+        }
+
+        #shrine-art {
+            font-size: 16px;
+            line-height: 1.1;
+            white-space: pre;
+            text-align: center;
+            position: relative;
+            text-shadow: 0 0 5px rgba(255,255,255,0.05);
+            margin: 0;
+        }
+
+        .fabric { color: #666; }
+        .pattern-ajrak { color: #b22222; font-weight: bold; }
+        .pattern-indigo { color: #4169e1; font-weight: bold; }
+        .mannat-threads { color: #ff8c00; font-weight: bold; text-shadow: 0 0 5px rgba(255,140,0,0.4); } 
+        .machine-part { color: #444; }
+        .glowing-core { color: #ffeb3b; text-shadow: 0 0 20px #ffeb3b, 0 0 40px #ff8c00; animation: breathe 3s infinite alternate; }
+        .agarbatti { color: #ff4500; text-shadow: 0 0 10px #ff4500; }
+        
+        @keyframes breathe {
+            0% { opacity: 0.5; text-shadow: 0 0 10px #ffeb3b; }
+            100% { opacity: 1; text-shadow: 0 0 30px #ffeb3b, 0 0 50px #ff8c00; }
+        }
+
+        .smoke-stream {
+            display: inline-block;
+            color: #888;
+            animation: drift 5s linear infinite;
+            filter: blur(1px);
+        }
+        .smoke-stream.delay-1 { animation-delay: -1.5s; }
+        .smoke-stream.delay-2 { animation-delay: -3s; }
+
+        @keyframes drift {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.2; }
+            100% { transform: translateY(-30px) translateX(15px) scale(1.5); opacity: 0; }
+        }
+
+        #receipt-container {
+            display: none;
+            opacity: 0;
+            width: 100%;
+            height: 100vh;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 50px;
+            transition: opacity 2s ease;
+        }
+
         #receipt {
             width: 320px;
-            background-color: #f7f7f4; /* Off-white thermal paper */
+            background-color: #f7f7f4; 
             padding: 20px;
-            box-shadow: 0px 5px 15px rgba(0,0,0,0.8);
+            box-shadow: 0px 5px 30px rgba(255,255,255,0.05);
             border-left: 2px solid #e0e0d8;
             border-right: 2px solid #e0e0d8;
-            min-height: 80vh;
-            overflow-y: hidden; /* Hide scrollbar to look like paper */
+            height: 80vh;
+            overflow-y: hidden; 
             position: relative;
         }
-        /* Jagged bottom edge to look torn */
+
         #receipt::after {
             content: "";
             position: absolute;
@@ -54,6 +129,7 @@
                         linear-gradient(45deg, transparent 50%, #f7f7f4 50%);
             background-size: 10px 10px;
         }
+
         #paper-content {
             font-size: 13px;
             line-height: 1.1;
@@ -61,8 +137,10 @@
             word-wrap: break-word;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* Push text to the bottom as it prints */
+            justify-content: flex-end;
+            min-height: 100%;
         }
+
         .header {
             text-align: center;
             border-bottom: 1px dashed #222;
@@ -74,16 +152,39 @@
 </head>
 <body>
 
-    <button id="activation-btn">Awaken The Machine</button>
+    <div id="landing-screen">
+        <button id="activation-btn">Awaken The Machine</button>
+        
+<pre id="shrine-art">
+             <span class="smoke-stream">༄</span>                           <span class="smoke-stream delay-1">༄</span>
+            <span class="smoke-stream delay-1">༄</span>                             <span class="smoke-stream delay-2">༄</span>
+           <span class="smoke-stream delay-2">༄</span>                               <span class="smoke-stream">༄</span>
+                      <span class="mannat-threads">|||||||||||||||</span>
+                    <span class="fabric">_||__||____||__||_</span>
+                   <span class="fabric">/░░░░░░░░░░░░░░░░░░\</span>
+                  <span class="fabric">/░░</span><span class="pattern-ajrak">▞▚▞▚▞▚</span><span class="fabric">░░░░</span><span class="pattern-ajrak">▞▚▞▚▞▚</span><span class="fabric">░░\</span>
+                 <span class="fabric">|░░</span><span class="pattern-indigo">▩▦▩▦▩</span><span class="fabric">░░░░░░</span><span class="pattern-indigo">▩▦▩▦▩</span><span class="fabric">░░|</span>
+                <span class="fabric">/|░░░░░░░</span><span class="glowing-core">(( ❂ ))</span><span class="fabric">░░░░░░░|\</span>
+        <span class="mannat-threads">///</span><span class="machine-part">====</span><span class="fabric">|░░░░░░░░░░░░░░░░░░░░|</span><span class="machine-part">====</span><span class="mannat-threads">\\\</span>
+       <span class="mannat-threads">///</span>    <span class="machine-part">||</span><span class="fabric">░░</span><span class="pattern-ajrak">▓▓▓▓▓▓</span><span class="fabric">░░░░</span><span class="pattern-ajrak">▓▓▓▓▓▓</span><span class="fabric">░░</span><span class="machine-part">||</span>    <span class="mannat-threads">\\\</span>
+      <span class="mannat-threads">///</span>     <span class="machine-part">||</span><span class="fabric">░░░░░░░░░░░░░░░░░░░░</span><span class="machine-part">||</span>     <span class="mannat-threads">\\\</span>
+     <span class="mannat-threads">//</span>      <span class="machine-part">/||\</span><span class="fabric">░░░░░░░░░░░░░░░░</span><span class="machine-part">/||\</span>      <span class="mannat-threads">\\</span>
+    <span class="agarbatti">|]</span>      <span class="machine-part">///|\\\</span>                <span class="machine-part">///|\\\</span>      <span class="agarbatti">[|</span>
+    <span class="machine-part">||</span>     <span class="machine-part">////|\\\\</span>              <span class="machine-part">////|\\\\</span>     <span class="machine-part">||</span>
+    <span class="machine-part">||</span>    <span class="machine-part">|||||||||||</span>            <span class="machine-part">|||||||||||</span>    <span class="machine-part">||</span>
+</pre>
+    </div>
 
-    <div id="receipt">
-        <div id="paper-content">
-            <div class="header">
-                TRANSLATION LOG<br>
-                A THREAD, A SMOKE...<br>
-                AWAITING PRAYER...
+    <div id="receipt-container">
+        <div id="receipt">
+            <div id="paper-content">
+                <div class="header">
+                    TRANSLATION LOG<br>
+                    A THREAD, A SMOKE...<br>
+                    AWAITING PRAYER...
+                </div>
+                <div id="glitch-output"></div>
             </div>
-            <div id="glitch-output"></div>
         </div>
     </div>
 
@@ -91,11 +192,32 @@
         const btn = document.getElementById('activation-btn');
         const output = document.getElementById('glitch-output');
         const receipt = document.getElementById('receipt');
+        const landingScreen = document.getElementById('landing-screen');
+        const receiptContainer = document.getElementById('receipt-container');
 
-        // Glitch character sets based on volume intensity
-        const charsLow = ['.', ',', '-', '_', ':', ';', ' '];
-        const charsMid = ['/', '\\', '|', '+', '=', '*', '^'];
-        const charsHigh = ['#', '@', '%', '8', '0', '▓', '▒', '░'];
+        // Added numbers, english letters, and urdu/arabic symbols
+        const charsLow = ['.', ',', '-', '_', ':', ';', ' ', 'a', 'e', 'i', '1', '0'];
+        const charsMid = ['/', '\\', '|', '+', '=', '*', '^', 'v', 'x', 'z', 'M', 'N', '7', '4', 'ك', 'م'];
+        const charsHigh = ['#', '@', '%', '8', '0', '▓', '▒', '░', '█', 'X', 'Q', 'W', '!', '?', '۞', '۝'];
+
+        // Glitch fragments that occasionally print
+        const glitchPhrases = [
+            "[NULL_PRAYER]", 
+            "ERR_TRANSLATION", 
+            "<vow_corrupted>", 
+            "DATA_SEDIMENT",
+            "sys.weep()",
+            "___recalculating___",
+            "01101000 01101111 01110000 01100101" // binary for 'hope'
+        ];
+
+        // ASCII objects/faces drawn on loud noises
+        const asciiArt = [
+            "  ___  \n / _ \\ \n| O_O |\n \\___/ ",
+            " \\|||/ \n (> <) \nooO-Ooo",
+            " ╔═══╗ \n ║ ۞ ║ \n ╚═══╝ ",
+            " ...///.. \n ||null|| \n ...///.. "
+        ];
 
         let audioContext;
         let analyser;
@@ -106,15 +228,21 @@
             if (isListening) return;
             
             try {
-                // Request microphone access
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 
-                // Set up Web Audio API
+                landingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    landingScreen.style.display = 'none';
+                    receiptContainer.style.display = 'flex';
+                    setTimeout(() => {
+                        receiptContainer.style.opacity = '1';
+                    }, 50);
+                }, 2000); 
+
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioContext.createAnalyser();
                 const source = audioContext.createMediaStreamSource(stream);
                 
-                // Configure analyser node
                 analyser.fftSize = 256; 
                 source.connect(analyser);
                 
@@ -122,7 +250,6 @@
                 dataArray = new Uint8Array(bufferLength);
                 
                 isListening = true;
-                btn.style.display = 'none'; // Hide button once started
                 
                 printGlitch();
             } catch (err) {
@@ -132,50 +259,49 @@
         });
 
         function printGlitch() {
-            // Get current audio data
             analyser.getByteFrequencyData(dataArray);
             
-            // Calculate average volume
             let sum = 0;
             for (let i = 0; i < dataArray.length; i++) {
                 sum += dataArray[i];
             }
             let avgVolume = sum / dataArray.length;
 
-            // Only print if there is actual sound (ignores total silence)
             if (avgVolume > 5) {
                 let line = "";
-                let lineLength = Math.floor(Math.random() * 20) + 15; // Random line width
 
-                for (let i = 0; i < lineLength; i++) {
-                    // Pick character set based on volume spikes
-                    if (avgVolume > 80) {
-                        line += charsHigh[Math.floor(Math.random() * charsHigh.length)];
-                    } else if (avgVolume > 30) {
-                        line += charsMid[Math.floor(Math.random() * charsMid.length)];
-                    } else {
-                        line += charsLow[Math.floor(Math.random() * charsLow.length)];
+                // Chance to inject a phrase or drawing based on volume
+                if (avgVolume > 60 && Math.random() > 0.96) {
+                    line = asciiArt[Math.floor(Math.random() * asciiArt.length)];
+                } 
+                else if (avgVolume > 35 && Math.random() > 0.95) {
+                    line = glitchPhrases[Math.floor(Math.random() * glitchPhrases.length)];
+                } 
+                else {
+                    // Standard translation noise
+                    let lineLength = Math.floor(Math.random() * 20) + 15; 
+                    for (let i = 0; i < lineLength; i++) {
+                        if (avgVolume > 80) {
+                            line += charsHigh[Math.floor(Math.random() * charsHigh.length)];
+                        } else if (avgVolume > 30) {
+                            line += charsMid[Math.floor(Math.random() * charsMid.length)];
+                        } else {
+                            line += charsLow[Math.floor(Math.random() * charsLow.length)];
+                        }
                     }
+                    if (Math.random() > 0.8) line = "    " + line;
                 }
 
-                // Add random spacing to simulate torn/glitchy text
-                if (Math.random() > 0.8) line = "    " + line;
-
-                // Append line to the receipt
                 const newLine = document.createElement('div');
                 newLine.textContent = line;
                 output.appendChild(newLine);
 
-                // Keep receipt scrolling down to simulate continuous printing
                 receipt.scrollTop = receipt.scrollHeight;
 
-                // Prevent the browser from crashing by limiting DOM nodes
                 if (output.childNodes.length > 100) {
                     output.removeChild(output.firstChild);
                 }
             }
-
-            // Loop the function at the speed of the browser refresh rate
             requestAnimationFrame(printGlitch);
         }
     </script>
