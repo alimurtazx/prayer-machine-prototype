@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Corrupted Mannat</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #222;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        #activation-btn {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 12px 24px;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        #activation-btn:hover {
+            background: #ddd;
+        }
+        /* Thermal Receipt Styling */
+        #receipt {
+            width: 320px;
+            background-color: #f7f7f4; /* Off-white thermal paper */
+            padding: 20px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.8);
+            border-left: 2px solid #e0e0d8;
+            border-right: 2px solid #e0e0d8;
+            min-height: 80vh;
+            overflow-y: hidden; /* Hide scrollbar to look like paper */
+            position: relative;
+        }
+        /* Jagged bottom edge to look torn */
+        #receipt::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(135deg, transparent 50%, #f7f7f4 50%), 
+                        linear-gradient(45deg, transparent 50%, #f7f7f4 50%);
+            background-size: 10px 10px;
+        }
+        #paper-content {
+            font-size: 13px;
+            line-height: 1.1;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* Push text to the bottom as it prints */
+        }
+        .header {
+            text-align: center;
+            border-bottom: 1px dashed #222;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="activation-btn">Awaken The Machine</button>
+
+    <div id="receipt">
+        <div id="paper-content">
+            <div class="header">
+                TRANSLATION LOG<br>
+                A THREAD, A SMOKE...<br>
+                AWAITING PRAYER...
+            </div>
+            <div id="glitch-output"></div>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('activation-btn');
+        const output = document.getElementById('glitch-output');
+        const receipt = document.getElementById('receipt');
+
+        // Glitch character sets based on volume intensity
+        const charsLow = ['.', ',', '-', '_', ':', ';', ' '];
+        const charsMid = ['/', '\\', '|', '+', '=', '*', '^'];
+        const charsHigh = ['#', '@', '%', '8', '0', '▓', '▒', '░'];
+
+        let audioContext;
+        let analyser;
+        let dataArray;
+        let isListening = false;
+
+        btn.addEventListener('click', async () => {
+            if (isListening) return;
+            
+            try {
+                // Request microphone access
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                // Set up Web Audio API
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                const source = audioContext.createMediaStreamSource(stream);
+                
+                // Configure analyser node
+                analyser.fftSize = 256; 
+                source.connect(analyser);
+                
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+                
+                isListening = true;
+                btn.style.display = 'none'; // Hide button once started
+                
+                printGlitch();
+            } catch (err) {
+                alert("Microphone access is required for the machine to listen.");
+                console.error(err);
+            }
+        });
+
+        function printGlitch() {
+            // Get current audio data
+            analyser.getByteFrequencyData(dataArray);
+            
+            // Calculate average volume
+            let sum = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+            }
+            let avgVolume = sum / dataArray.length;
+
+            // Only print if there is actual sound (ignores total silence)
+            if (avgVolume > 5) {
+                let line = "";
+                let lineLength = Math.floor(Math.random() * 20) + 15; // Random line width
+
+                for (let i = 0; i < lineLength; i++) {
+                    // Pick character set based on volume spikes
+                    if (avgVolume > 80) {
+                        line += charsHigh[Math.floor(Math.random() * charsHigh.length)];
+                    } else if (avgVolume > 30) {
+                        line += charsMid[Math.floor(Math.random() * charsMid.length)];
+                    } else {
+                        line += charsLow[Math.floor(Math.random() * charsLow.length)];
+                    }
+                }
+
+                // Add random spacing to simulate torn/glitchy text
+                if (Math.random() > 0.8) line = "    " + line;
+
+                // Append line to the receipt
+                const newLine = document.createElement('div');
+                newLine.textContent = line;
+                output.appendChild(newLine);
+
+                // Keep receipt scrolling down to simulate continuous printing
+                receipt.scrollTop = receipt.scrollHeight;
+
+                // Prevent the browser from crashing by limiting DOM nodes
+                if (output.childNodes.length > 100) {
+                    output.removeChild(output.firstChild);
+                }
+            }
+
+            // Loop the function at the speed of the browser refresh rate
+            requestAnimationFrame(printGlitch);
+        }
+    </script>
+</body>
+</html>
